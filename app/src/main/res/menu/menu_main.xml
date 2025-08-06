@@ -2,14 +2,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_profile"
+        android:id="@+id/action_logistica"
         android:title="Logística"
-        android:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/home"
+        />
 
     <item
         android:id="@+id/action_settings"
         android:title="Ajustes"
-
+        android:icon="@drawable/settings"
+        app:showAsAction="never"
         />
 
+    <item
+        android:id="@+id/action_logout"
+        android:title="Cerrar Sesión"
+        android:icon="@drawable/logout"
+        app:showAsAction="never"
+        />
 </menu>
