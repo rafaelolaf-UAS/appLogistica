@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/nav_scan"
-        android:title="Escaner"
-        android:icon="@drawable/scanner"
-        />
-    <item
         android:id="@+id/nav_home"
         android:icon="@drawable/home"
         android:title="Inicio"
+        />
+    <item
+        android:id="@+id/nav_scan"
+        android:title="Escaner"
+        android:icon="@drawable/scanner"
         />
     <item
         android:id="@+id/nav_query"

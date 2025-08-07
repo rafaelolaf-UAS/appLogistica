@@ -24,7 +24,7 @@ class HomeActivity : AppCompatActivity() {
         prefs = getSharedPreferences("SF_PREFS", MODE_PRIVATE)
         val accessToken = prefs.getString("access_token", "No token found")
 
-        findViewById<TextView>(R.id.tvToken).text = "Token:\n$accessToken"
+        //findViewById<TextView>(R.id.tvToken).text = "Token:\n$accessToken"
 
         if(savedInstanceState == null) {
             supportFragmentManager
