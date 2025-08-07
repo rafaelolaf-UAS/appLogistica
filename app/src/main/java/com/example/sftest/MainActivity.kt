@@ -54,9 +54,12 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         val token = params["access_token"]
+                        val instanceUrl = params["instance_url"]
                         if (!token.isNullOrBlank()) {
-                            getSharedPreferences("SF_PREFS", MODE_PRIVATE)
-                                .edit().putString("access_token", token).apply()
+                            getSharedPreferences("SF_PREFS", MODE_PRIVATE).edit()
+                                .putString("access_token", token)
+                                .putString("instance_url", instanceUrl)
+                                .apply()
 
                             startActivity(Intent(this@MainActivity, HomeActivity::class.java))
                             finish()
