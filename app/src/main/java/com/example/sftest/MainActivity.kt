@@ -6,16 +6,14 @@ import android.net.Uri
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.webkit.WebResourceRequest
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+
 class MainActivity : AppCompatActivity() {
     private val clientId    = "3MVG96LA2t1yu9WJURmDwETIOPukz0ilhyA2EgsM22LToWw8dLi9IJ4XXnXS.aKwTeaqy2uk9xB13B9K6lU2j"
     private val redirectUri = "androidApp://auth/success"
-    private val loginUrl    =
-        "https://test.salesforce.com/services/oauth2/authorize" +
-                "?response_type=token" +
-                "&client_id=$clientId" +
-                "&redirect_uri=$redirectUri"
+
+    private val authHost = "https://test.salesforce.com" // sandbox
+    // private val authHost = "https://login.salesforce.com" // producción
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,15 +23,13 @@ class MainActivity : AppCompatActivity() {
             it.settings.domStorageEnabled = true
 
             it.webViewClient = object : WebViewClient() {
-                // Usar esta versión para mejor compatibilidad
                 override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                    request?.url?.let { url ->
-                        if (handleRedirect(url.toString())) return true
+                    request?.url?.toString()?.let { url ->
+                        if (handleRedirect(url)) return true
                     }
                     return false
                 }
 
-                // Versión para dispositivos antiguos
                 @Suppress("DEPRECATION")
                 override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                     if (url != null && handleRedirect(url)) return true
@@ -41,21 +37,18 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 private fun handleRedirect(url: String): Boolean {
-                    // 1. Usar comparación insensible a mayúsculas
-                    if (url.lowercase().startsWith(redirectUri.lowercase())) {
-                        // 2. Extraer parámetros del fragmento correctamente
+                    if (url.startsWith(redirectUri, ignoreCase = true)) {
                         val uri = Uri.parse(url)
                         val fragment = uri.fragment ?: ""
-
-                        // 3. Parsear manualmente el fragmento
-                        val params = fragment.split("&").associate { param ->
-                            val parts = param.split("=")
-                            if (parts.size >= 2) parts[0] to parts[1] else "" to ""
-                        }
+                        val params = fragment.split("&").mapNotNull {
+                            val p = it.split("=")
+                            if (p.size >= 2) p[0] to Uri.decode(p[1]) else null
+                        }.toMap()
 
                         val token = params["access_token"]
-                        val instanceUrl = params["instance_url"]
-                        if (!token.isNullOrBlank()) {
+                        val instanceUrl = params["instance_url"] // ya viene en el fragment para implicit flow
+                        // Nota: implicit flow no retorna refresh_token
+                        if (!token.isNullOrBlank() && !instanceUrl.isNullOrBlank()) {
                             getSharedPreferences("SF_PREFS", MODE_PRIVATE).edit()
                                 .putString("access_token", token)
                                 .putString("instance_url", instanceUrl)
@@ -63,8 +56,10 @@ class MainActivity : AppCompatActivity() {
 
                             startActivity(Intent(this@MainActivity, HomeActivity::class.java))
                             finish()
+                        } else {
+                            // No token — mostrar error o reenviar a login
                         }
-                        return true // Indica que hemos manejado la URL
+                        return true
                     }
                     return false
                 }
@@ -72,10 +67,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContentView(webView)
-        // 4. Codificar correctamente la redirect_uri
+
+        // Construir la URL con redirect ya codificado, solo una vez (evita duplicar redirect_uri)
         val encodedRedirect = Uri.encode(redirectUri)
-        val fullLoginUrl = "$loginUrl&redirect_uri=$encodedRedirect"
+        val fullLoginUrl = "$authHost/services/oauth2/authorize?response_type=token&client_id=$clientId&redirect_uri=$encodedRedirect"
         webView.loadUrl(fullLoginUrl)
     }
 }
-

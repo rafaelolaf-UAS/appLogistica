@@ -30,7 +30,7 @@ class query : Fragment(R.layout.fragment_query) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         prefs = requireContext().getSharedPreferences("SF_PREFS", Context.MODE_PRIVATE)
         try {
-            api = RetrofitClient.create(prefs)
+            api = RetrofitClient.create(prefs, requireContext().applicationContext)
         } catch (e: IllegalStateException){
             Toast.makeText(requireContext(), "No hay url, Inicia sesión nuevameente", Toast.LENGTH_LONG).show()
             prefs.edit().clear().apply()
