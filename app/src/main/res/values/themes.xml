@@ -10,4 +10,5 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowDisablePreview">true</item>
     </style>
+    <style name="Theme.Scan" parent="Theme.MaterialComponents.Light.NoActionBar"/>
 </resources>
