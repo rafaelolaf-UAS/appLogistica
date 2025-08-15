@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.View
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.camera.core.CameraSelector
@@ -174,6 +175,12 @@ class scan : Fragment(R.layout.fragment_scan) {
 
         // Siempre actualiza pendientes al crear vista
         updatePendingCount()
+
+        tvPendingCount.setOnClickListener {
+            val intent = Intent(requireContext(), ScansListActivity::class.java)
+            intent.putExtra("filter", "pending")
+            startActivity(intent)
+        }
     }
 
     override fun onResume() {

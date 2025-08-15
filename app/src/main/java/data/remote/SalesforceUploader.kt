@@ -26,9 +26,8 @@ object SalesforceUploader {
             val reqBody = buildCompositeCreateBody(chunk)
             val body: RequestBody = reqBody.toString().toRequestBody(JSON)
 
-            // endpoint típico: /services/data/vXX.X/composite
-            // Asegúrate que SalesforceApi tenga un método @POST("services/data/vXX.X/composite")
-            val response = api.composite(body) // <-- implementa en tu SalesforceApi
+
+            val response = api.composite(body)
 
             // Parseo básico
             val respObj = JSONObject(response.string())
