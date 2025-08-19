@@ -10,7 +10,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 object SalesforceUploader {
-    private const val SOBJECT_NAME = "Reception_Scan__c"
+    private const val SOBJECT_NAME = "Recepcion__c"
     private const val FIELD_CODE = "Code__c"
     private const val FIELD_QTY = "Quantity__c"
 
