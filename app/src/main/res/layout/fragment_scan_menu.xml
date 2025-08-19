@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/scan_menu_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Selecciona el tipo de escaneo"
+        android:textSize="18sp"
+        android:paddingBottom="12dp"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_scan_recepcion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Escaneo Recepción"
+        app:cornerRadius="8dp"
+        android:layout_marginBottom="12dp"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_scan_inventario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Escaneo Inventario"
+        app:cornerRadius="8dp"
+        android:layout_marginBottom="12dp"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_scan_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cancelar"
+        app:cornerRadius="8dp"
+        />
+
+</LinearLayout>

@@ -49,14 +49,15 @@ class HomeActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, home()) // recomienda nombres PascalCase
+                .replace(R.id.fragment_container, home())
                 .commit()
         }
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav)
         bottomNav.setOnItemSelectedListener { item ->
             val frag = when (item.itemId) {
-                R.id.nav_scan -> scan()
+                R.id.nav_scan -> scanMenu()
+                //R.id.nav_scan -> scan()
                 R.id.nav_query -> query()
                 R.id.nav_home -> home()
                 else -> null

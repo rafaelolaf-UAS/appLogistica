@@ -65,7 +65,6 @@ object SalesforceUploader {
         items.forEach { item ->
             val sobjectBody = JSONObject().apply {
                 put(FIELD_CODE, item.code)
-                put(FIELD_QTY, item.quantity)
             }
             compositeRequest.put(
                 JSONObject().apply {
