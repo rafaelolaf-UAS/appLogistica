@@ -1,5 +1,6 @@
 package com.example.sftest
 
+import Objects.RetrofitClient
 import android.Manifest
 import android.content.ActivityNotFoundException
 import android.content.ClipData
@@ -33,8 +34,11 @@ import com.example.sftest.adapters.ScansAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import data.remote.SalesforceUploader
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -91,6 +95,13 @@ class scan : Fragment(R.layout.fragment_scan) {
     private var lastScanValue: String? = null
     private var lastScanTime = 0L
     private val DEBOUNCE_MS = 500L
+
+    private var recepcionId: String? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        recepcionId = arguments?.getString("recepcionId")
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         prefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -314,6 +325,27 @@ class scan : Fragment(R.layout.fragment_scan) {
                     try {
                         val repo = data.ScanRepository.getInstance(requireContext())
                         val added = repo.addScan(raw, 1)
+
+                        if(added && !recepcionId.isNullOrBlank()){
+                            viewLifecycleOwner.lifecycleScope.launch {
+                                try {
+                                    val prefsLocal = requireContext().getSharedPreferences(PREFS_NAME, 0)
+                                    val api = RetrofitClient.create(prefsLocal, requireContext())
+                                    val guiaItems = listOf(mapOf("code" to "raw", "qty" to 1))
+                                    val guiaId = withContext(Dispatchers.IO){
+                                        SalesforceUploader.createGuia(api, recepcionId!!, raw, guiaItems)
+                                    }
+                                    requireActivity().runOnUiThread {
+                                        Snackbar.make(requireView(), "Guía subida: $guiaId", Snackbar.LENGTH_LONG).show()
+                                    }
+                                } catch (e: Exception){
+                                    e.printStackTrace()
+                                    requireActivity().runOnUiThread {
+                                        Snackbar.make(requireView(), "Error subiendo guía: ${e.message}", Snackbar.LENGTH_LONG).show()
+                                    }
+                                }
+                            }
+                        }
                         requireActivity().runOnUiThread {
                             if (added) {
                                 Snackbar.make(requireView(), "Escaneado: $raw", Snackbar.LENGTH_SHORT).show()
