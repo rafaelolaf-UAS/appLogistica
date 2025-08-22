@@ -326,6 +326,7 @@ class scan : Fragment(R.layout.fragment_scan) {
                         val repo = data.ScanRepository.getInstance(requireContext())
                         val added = repo.addScan(raw, 1)
 
+                        /*
                         if(added && !recepcionId.isNullOrBlank()){
                             viewLifecycleOwner.lifecycleScope.launch {
                                 try {
@@ -352,6 +353,19 @@ class scan : Fragment(R.layout.fragment_scan) {
                                 updatePendingCount()
                             } else {
                                 // ya existía
+                                Snackbar.make(requireView(), "Código ya escaneado", Snackbar.LENGTH_SHORT).show()
+                            }
+                        }
+
+                         */
+                        if (added) {
+                            // ya se insertó en Room; actualizar contador y mostrar feedback
+                            requireActivity().runOnUiThread {
+                                Snackbar.make(requireView(), "Escaneado: $raw", Snackbar.LENGTH_SHORT).show()
+                                updatePendingCount()
+                            }
+                        } else {
+                            requireActivity().runOnUiThread {
                                 Snackbar.make(requireView(), "Código ya escaneado", Snackbar.LENGTH_SHORT).show()
                             }
                         }
@@ -401,10 +415,58 @@ class scan : Fragment(R.layout.fragment_scan) {
                 return@launch
             }
 
+            if (recepcionId.isNullOrBlank()){
+                Snackbar.make(requireView(), "No hay recepción asociada, Cree una en el menú", Snackbar.LENGTH_SHORT).show()
+                return@launch
+            }
+
             btnUploadNow.isEnabled = false
-            btnUploadNow.text = "En cola..."
-            workers.UploadScheduler.enqueueOnce(requireContext())
-            Snackbar.make(requireView(), "Se encoló la subida ($pendingCount items).", Snackbar.LENGTH_SHORT).show()
+            btnUploadNow.text = "Enviando"
+
+            try {
+                val prefsLocal = requireContext().getSharedPreferences(PREFS_NAME, 0)
+                val api = RetrofitClient.create(prefsLocal, requireContext())
+
+                val pending: List<data.local.ScanItem> = withContext(Dispatchers.IO){
+                    repo.getPendingBatch(limit = 500)
+                }
+                if (pending.isEmpty()){
+                    Snackbar.make(requireView(), "No hay items pendientes por enviar.", Snackbar.LENGTH_SHORT).show()
+                    return@launch
+                }
+
+                val allIds = pending.map{it.id}
+                withContext(Dispatchers.IO){repo.markSending(allIds)}
+
+                var sentTotal = 0
+                val failedAcc = mutableListOf<Pair<Long, String>>()
+
+                for(item in pending){
+                    try{
+                        val guiaItems = listOf(mapOf("code" to item.code, "qty" to item.quantity))
+                        val guiaId = withContext(Dispatchers.IO){
+                            SalesforceUploader.createGuia(api, recepcionId!!, item.code, guiaItems)
+                        }
+                        withContext(Dispatchers.IO){repo.markSent(listOf(item.id))}
+                        sentTotal += 1
+                    } catch (e: Exception){
+                        val err = e.message ?: "Error desconocido"
+                        withContext(Dispatchers.IO){repo.markFailed(listOf(item.id), err)}
+                        failedAcc.add(item.id to err)
+                    }
+                }
+                Snackbar.make(requireView(), "Subida finalizada: enviados= $sentTotal, fallidos= ${failedAcc.size}", Snackbar.LENGTH_LONG).show()
+            } catch (ex: Exception){
+                ex.printStackTrace()
+                Snackbar.make(requireView(), "Error subiendo guías: ${ex.message}", Snackbar.LENGTH_LONG).show()
+            } finally {
+                btnUploadNow.isEnabled = true
+                btnUploadNow.text = "Subir Ahora"
+                updatePendingCount()
+            }
+
+//            workers.UploadScheduler.enqueueOnce(requireContext())
+//            Snackbar.make(requireView(), "Se encoló la subida ($pendingCount items).", Snackbar.LENGTH_SHORT).show()
         }
     }
 
