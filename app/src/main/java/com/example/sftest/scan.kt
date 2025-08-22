@@ -326,38 +326,6 @@ class scan : Fragment(R.layout.fragment_scan) {
                         val repo = data.ScanRepository.getInstance(requireContext())
                         val added = repo.addScan(raw, 1)
 
-                        /*
-                        if(added && !recepcionId.isNullOrBlank()){
-                            viewLifecycleOwner.lifecycleScope.launch {
-                                try {
-                                    val prefsLocal = requireContext().getSharedPreferences(PREFS_NAME, 0)
-                                    val api = RetrofitClient.create(prefsLocal, requireContext())
-                                    val guiaItems = listOf(mapOf("code" to "raw", "qty" to 1))
-                                    val guiaId = withContext(Dispatchers.IO){
-                                        SalesforceUploader.createGuia(api, recepcionId!!, raw, guiaItems)
-                                    }
-                                    requireActivity().runOnUiThread {
-                                        Snackbar.make(requireView(), "Guía subida: $guiaId", Snackbar.LENGTH_LONG).show()
-                                    }
-                                } catch (e: Exception){
-                                    e.printStackTrace()
-                                    requireActivity().runOnUiThread {
-                                        Snackbar.make(requireView(), "Error subiendo guía: ${e.message}", Snackbar.LENGTH_LONG).show()
-                                    }
-                                }
-                            }
-                        }
-                        requireActivity().runOnUiThread {
-                            if (added) {
-                                Snackbar.make(requireView(), "Escaneado: $raw", Snackbar.LENGTH_SHORT).show()
-                                updatePendingCount()
-                            } else {
-                                // ya existía
-                                Snackbar.make(requireView(), "Código ya escaneado", Snackbar.LENGTH_SHORT).show()
-                            }
-                        }
-
-                         */
                         if (added) {
                             // ya se insertó en Room; actualizar contador y mostrar feedback
                             requireActivity().runOnUiThread {
@@ -464,9 +432,6 @@ class scan : Fragment(R.layout.fragment_scan) {
                 btnUploadNow.text = "Subir Ahora"
                 updatePendingCount()
             }
-
-//            workers.UploadScheduler.enqueueOnce(requireContext())
-//            Snackbar.make(requireView(), "Se encoló la subida ($pendingCount items).", Snackbar.LENGTH_SHORT).show()
         }
     }
 
