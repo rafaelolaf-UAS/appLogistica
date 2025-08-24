@@ -11,7 +11,9 @@
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
         android:id="@+id/toolbar"
-        android:background="?attr/colorPrimary"
+        android:background="@color/bottom_bar_bg"
+        app:titleTextColor="@color/black"
+        app:navigationIconTint="@color/black"
         android:theme="?attr/actionBarTheme"
         app:title="Logística"
         app:layout_constraintTop_toTopOf="parent"
@@ -31,8 +33,10 @@
             />
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:background="@color/teal_200"
             android:id="@+id/bottom_nav"
+            android:background="@color/bottom_bar_bg"
+            app:itemIconTint="@color/black"
+            app:itemTextColor="@color/black"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:menu="@menu/bottom_nav_menu"

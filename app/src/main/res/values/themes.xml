@@ -1,7 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.SFTest" parent="Theme.AppCompat.Light.NoActionBar" />
+    <style name="Theme.SFTest" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- colores base (asegúrate que bottom_bar_bg exista en colors.xml) -->
+        <item name="colorPrimary">@color/bottom_bar_bg</item>
+        <item name="colorPrimaryDark">@color/bottom_bar_bg</item>
+        <item name="colorOnPrimary">@color/black</item>
+
+        <!-- Forzar que la ventana dibuje el fondo de las system bars -->
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+
+        <!-- StatusBar color (para APIs que lo usan desde el tema) -->
+        <item name="android:statusBarColor">@color/bottom_bar_bg</item>
+
+        <!-- Iconos oscuros si el fondo es claro (API 23+) -->
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+
     <style name="Theme.Splash" parent="Theme.AppCompat.Light.NoActionBar" >
         <item name="android:windowBackground">@drawable/splash_background</item>
         <item name="android:windowFullscreen">true</item>
