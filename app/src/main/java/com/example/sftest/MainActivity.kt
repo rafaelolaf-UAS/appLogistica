@@ -3,10 +3,14 @@ package com.example.sftest
 import android.content.Intent
 import android.os.Bundle
 import android.net.Uri
+import android.util.Log
+import android.view.WindowManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.webkit.WebResourceRequest
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 
 class MainActivity : AppCompatActivity() {
     private val clientId    = "3MVG96LA2t1yu9WJURmDwETIOPukz0ilhyA2EgsM22LToWw8dLi9IJ4XXnXS.aKwTeaqy2uk9xB13B9K6lU2j"
@@ -67,6 +71,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContentView(webView)
+
+        WindowCompat.setDecorFitsSystemWindows(window, true)
+
+        val statusColor = ContextCompat.getColor(this, R.color.bottom_bar_bg)
+        window.statusBarColor = statusColor
+        Log.d("STATUSBAR", "status_color: ${window.statusBarColor.toString(16)}")
 
         // Construir la URL con redirect ya codificado, solo una vez (evita duplicar redirect_uri)
         val encodedRedirect = Uri.encode(redirectUri)
